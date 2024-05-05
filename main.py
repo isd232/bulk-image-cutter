@@ -41,6 +41,7 @@ def crop_images():
 
 
 root = tk.Tk()
+root.geometry("300x200+100+100")
 root.title("Bulk Image Cropper")
 
 frame = tk.Frame(root)
@@ -54,7 +55,7 @@ entry.pack()
 
 lbl = tk.Label(root, text="After clicking button folder selection will appear:\n1. Select source directory\n2. Select "
                           "target directory (preferably empty)", anchor='w', justify='left')
-lbl.pack()  # Added padding for clearer visibility of alignment
+lbl.pack()
 
 btn = tk.Button(frame, text="Select Folders and Crop Images", command=crop_images)
 btn.pack(pady=10)
