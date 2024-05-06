@@ -17,7 +17,6 @@ class App:
         tk.Button(label_frame, text='Crop Images', command=self.launch_image_cropper).pack(fill='x', pady=5)
         tk.Button(label_frame, text='Crop Videos', command=self.launch_video_cropper).pack(fill='x', pady=5)
 
-
     def launch_video_cropper(self):
         new_window = tk.Toplevel(self.root)
         VideoCropperApp(new_window)
