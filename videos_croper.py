@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, Label
 from PIL import Image, ImageTk
-from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.editor import VideoFileClip
 import os
 
 
@@ -10,6 +10,7 @@ class VideoCropperApp:
         self.root = root
         self.root.title('Bulk Video Cropper Tool')
         self.setup_ui()
+        self.center_window(460, 200)
 
     def setup_ui(self):
         tk.Label(self.root, text='Directory:').grid(row=0, column=0)
@@ -85,6 +86,17 @@ class VideoCropperApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load preview: {e}")
 
+    def center_window(self, width, height):
+        # Get Screen Dimension
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # Center
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+
+        self.root.geometry(f'{width}x{height}+{x}+{y}')
+
     def crop_all_videos(self):
         directory = self.directory_entry.get()
         output_directory = self.output_directory_entry.get()
@@ -93,17 +105,19 @@ class VideoCropperApp:
         bottom = int(self.bottom_entry.get())
         left = int(self.left_entry.get())
 
-        for filename in os.listdir(directory):
-            if filename.endswith(".mp4"):
-                input_file = os.path.join(directory, filename)
-                output_file = os.path.join(output_directory, f"cropped_{filename}")
-                try:
+        try:
+            for filename in os.listdir(directory):
+                if filename.endswith(".mp4"):
+                    input_file = os.path.join(directory, filename)
+                    output_file = os.path.join(output_directory, f"cropped_{filename}")
                     video = VideoFileClip(input_file)
                     w, h = video.size
                     cropped_video = video.crop(x1=left, y1=top, x2=w - right, y2=h - bottom)
                     cropped_video.write_videofile(output_file, codec='libx264', preset='slow',
                                                   ffmpeg_params=['-crf', '17'])
-                except Exception as e:
-                    messagebox.showerror("Error", f"Error processing {filename}: {e}")
 
-        messagebox.showinfo("Success", "All videos have been successfully cropped!")
+            messagebox.showinfo("Success", "All videos have been successfully cropped!")
+            self.root.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", f"Error processing videos: {e}")
+            self.root.destroy()

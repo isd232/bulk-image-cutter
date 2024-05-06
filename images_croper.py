@@ -9,6 +9,7 @@ class ImageCropperApp:
         self.root = root
         self.root.title('Bulk Image Cropper')
         self.setup_ui()
+        self.center_window(460, 200)
 
     def setup_ui(self):
         tk.Label(self.root, text='Directory:').grid(row=0, column=0)
@@ -41,6 +42,17 @@ class ImageCropperApp:
 
         tk.Button(self.root, text='Preview', command=self.preview_crop).grid(row=7, column=0)
         tk.Button(self.root, text='Crop All Images', command=self.crop_all_images).grid(row=7, column=1)
+
+    def center_window(self, width, height):
+        # Get Screen Dimension
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # Center
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+
+        self.root.geometry(f'{width}x{height}+{x}+{y}')
 
     def load_directory(self):
         directory = filedialog.askdirectory()
@@ -81,6 +93,7 @@ class ImageCropperApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load preview: {e}")
 
+
     def crop_all_images(self):
         directory = self.directory_entry.get()
         output_directory = self.output_directory_entry.get()
@@ -91,17 +104,22 @@ class ImageCropperApp:
 
         skipped_files = 0
         processed_files = 0
-        for filename in os.listdir(directory):
-            if filename.endswith(('.png', '.jpg', '.jpeg')):
-                img_path = os.path.join(directory, filename)
-                img = Image.open(img_path)
-                w, h = img.size
-                if (w - right) <= left or (h - bottom) <= top:
-                    skipped_files += 1
-                    continue
-                cropped_image = img.crop((left, top, w - right, h - bottom))
-                cropped_image.save(os.path.join(output_directory, f"cropped_{filename}"))
-                processed_files += 1
+        try:
+            for filename in os.listdir(directory):
+                if filename.endswith(('.png', '.jpg', '.jpeg')):
+                    img_path = os.path.join(directory, filename)
+                    img = Image.open(img_path)
+                    w, h = img.size
+                    if (w - right) <= left or (h - bottom) <= top:
+                        skipped_files += 1
+                        continue
+                    cropped_image = img.crop((left, top, w - right, h - bottom))
+                    cropped_image.save(os.path.join(output_directory, f"cropped_{filename}"))
+                    processed_files += 1
 
-        messagebox.showinfo("Success",
-                            f"All images have been successfully cropped!\nProcessed: {processed_files}\nSkipped: {skipped_files}")
+            messagebox.showinfo("Success",
+                                f"All images have been successfully cropped!\nProcessed: {processed_files}\nSkipped: {skipped_files}")
+            self.root.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", f"Error processing images: {e}")
+            self.root.destroy()
