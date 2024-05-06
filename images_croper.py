@@ -9,7 +9,7 @@ class ImageCropperApp:
         self.root = root
         self.root.title('Bulk Image Cropper')
         self.setup_ui()
-        self.center_window(460, 200)
+        #self.center_window(460, 200)
 
     def setup_ui(self):
         tk.Label(self.root, text='Directory:').grid(row=0, column=0)

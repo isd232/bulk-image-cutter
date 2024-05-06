@@ -3,6 +3,10 @@ from tkinter import filedialog, messagebox, Label
 from PIL import Image, ImageTk
 from moviepy.editor import VideoFileClip
 import os
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s) - %(message)s')
 
 
 class VideoCropperApp:
@@ -10,7 +14,7 @@ class VideoCropperApp:
         self.root = root
         self.root.title('Bulk Video Cropper Tool')
         self.setup_ui()
-        self.center_window(460, 200)
+        #self.center_window(460, 200)
 
     def setup_ui(self):
         tk.Label(self.root, text='Directory:').grid(row=0, column=0)
@@ -110,14 +114,22 @@ class VideoCropperApp:
                 if filename.endswith(".mp4"):
                     input_file = os.path.join(directory, filename)
                     output_file = os.path.join(output_directory, f"cropped_{filename}")
+
                     video = VideoFileClip(input_file)
                     w, h = video.size
+                    logging.debug(f"Video loaded successfully: {input_file}")
+
                     cropped_video = video.crop(x1=left, y1=top, x2=w - right, y2=h - bottom)
+                    if cropped_video is None:
+                        logging.error("Cropping failed.")
+
                     cropped_video.write_videofile(output_file, codec='libx264', preset='slow',
                                                   ffmpeg_params=['-crf', '17'])
+                    logging.debug("Video written successfully.")
 
             messagebox.showinfo("Success", "All videos have been successfully cropped!")
             self.root.destroy()
         except Exception as e:
+            logging.error(f"Error processing videos: {e}")
             messagebox.showerror("Error", f"Error processing videos: {e}")
             self.root.destroy()
