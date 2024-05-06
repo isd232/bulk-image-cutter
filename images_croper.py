@@ -7,7 +7,7 @@ import os
 class ImageCropperApp:
     def __init__(self, root):
         self.root = root
-        self.root.title('Bulk Image Cropper Tool')
+        self.root.title('Bulk Image Cropper')
         self.setup_ui()
 
     def setup_ui(self):
